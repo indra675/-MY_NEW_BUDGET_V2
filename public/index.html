@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Budget Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div><h1>My Budget</h1><p class="sub">Track every rupee, stay on plan ✨</p></div>
+  <label class="month">📅 <input type="month" id="month"></label>
+</header>
+
+<main>
+  <section class="cards">
+    <div class="card hero good"><span>💚 Money left (this month)</span><b id="sLeft">₹0</b></div>
+    <div class="card"><span>💼 Monthly salary</span><b id="sSalary">₹0</b></div>
+    <div class="card"><span>🗓️ Monthly expenses</span><b id="sMonthly">₹0</b></div>
+    <div class="card"><span>🎯 Savings goal</span><b id="sSavings">₹0</b></div>
+    <div class="card"><span>🛍️ Daily spent (month)</span><b id="sSpent">₹0</b></div>
+    <div class="card"><span>📆 Daily budget</span><b id="sDaily">₹0</b></div>
+    <div class="card"><span>☀️ Today left</span><b id="sToday">₹0</b></div>
+    <div class="card"><span>📈 Salary used</span><b id="sPct">0%</b></div>
+  </section>
+  <div class="progress"><div id="bar"></div></div>
+
+  <!-- Daily report: today & tomorrow -->
+  <section class="panel">
+    <div class="row wrap">
+      <h2>📋 Daily report</h2>
+      <div class="chips">
+        <button type="button" class="ghost" data-day="-1">Yesterday</button>
+        <button type="button" class="ghost" data-day="0">Today</button>
+        <button type="button" class="ghost" data-day="1">Tomorrow</button>
+        <input type="date" id="rDate" class="mini">
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="daybox" id="dayA"></div>
+      <div class="daybox" id="dayB"></div>
+    </div>
+    <div class="grid two" style="margin-top:14px">
+      <div><h3 id="dayPieTitle">Spent on (selected day)</h3><div id="dayPie"></div></div>
+      <div><h3>Entries on selected day</h3><ul id="dayList" class="list"></ul></div>
+    </div>
+  </section>
+
+  <!-- Date range -->
+  <section class="panel">
+    <div class="row wrap">
+      <h2>🔄 Spending between dates</h2>
+      <div class="chips">
+        <input type="date" id="rFrom" class="mini"> <span class="muted">to</span> <input type="date" id="rTo" class="mini">
+      </div>
+    </div>
+    <div id="rangeBox"></div>
+  </section>
+
+  <div class="grid">
+    <!-- Add daily expense -->
+    <section class="panel">
+      <h2>➕ Add daily expense</h2>
+      <form id="expForm">
+        <label>Date <input type="date" id="eDate" required></label>
+        <label>Amount (₹) <input type="number" id="eAmt" min="0" step="0.01" required placeholder="e.g. 40"></label>
+        <label>What did you spend on?
+          <input type="text" id="eCat" list="catList" maxlength="40" required placeholder="Type here, e.g. Rapido, Tea, Recharge">
+          <datalist id="catList"></datalist>
+        </label>
+        <label>Paid by
+          <select id="ePay"><option>Cash</option><option>UPI</option><option>Card</option></select>
+        </label>
+        <label>Note (optional) <input type="text" id="eNote" maxlength="60" placeholder="e.g. tea"></label>
+        <button type="submit">Add daily expense</button>
+      </form>
+    </section>
+
+    <!-- Add monthly expense -->
+    <section class="panel">
+      <h2>🗓️ Add monthly expense</h2>
+      <p class="muted" style="margin:-6px 0 12px">Rent, recharge, EMI, subscriptions… saved separately from daily expenses.</p>
+      <form id="monForm">
+        <label>Name <input type="text" id="mName" maxlength="40" required placeholder="e.g. Rent, Mobile recharge"></label>
+        <label>Amount (₹) <input type="number" id="mAmt" min="0" step="0.01" required placeholder="e.g. 5000"></label>
+        <label>Month <input type="month" id="mMonth" required></label>
+        <label class="check"><input type="checkbox" id="mRepeat"> 🔁 Repeat every month</label>
+        <label>Paid by
+          <select id="mPay"><option>UPI</option><option>Cash</option><option>Card</option></select>
+        </label>
+        <button type="submit">Add monthly expense</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>⚙️ Salary &amp; savings</h2>
+    <div class="grid two">
+      <label>Monthly salary (₹) <input type="number" id="salary" min="0" step="1"></label>
+      <label>Monthly savings goal (₹) <input type="number" id="savings" min="0" step="1"></label>
+    </div>
+  </section>
+
+  <div class="grid three">
+    <section class="panel"><h2>📊 Daily expenses – spent on</h2><div id="catPie"></div></section>
+    <section class="panel"><h2>🗓️ Monthly expenses</h2><div id="monPie"></div></section>
+    <section class="panel"><h2>💳 Paid by (daily)</h2><div id="payPie"></div></section>
+  </div>
+
+  <section class="panel">
+    <div class="row"><h2>🗓️ Monthly expenses</h2><button type="button" id="csvM" class="ghost">Download CSV</button></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Name</th><th>Applies to</th><th>Paid by</th><th class="r">Amount</th><th></th></tr></thead>
+        <tbody id="monRows"></tbody>
+      </table>
+    </div>
+    <p id="monEmpty" class="muted">No monthly expenses for this month.</p>
+  </section>
+
+  <section class="panel">
+    <div class="row"><h2>🧾 Daily expenses this month</h2><button type="button" id="csv" class="ghost">Download CSV</button></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Date</th><th>Spent on</th><th>Paid by</th><th>Note</th><th class="r">Amount</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p id="empty" class="muted">No daily expenses yet for this month.</p>
+  </section>
+</main>
+<footer>Your data is saved online only - open this on any device. <span id="syncStatus"></span></footer>
+<script src="app.js"></script>
+</body>
+</html>
